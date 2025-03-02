@@ -23,3 +23,18 @@ alert(`こんにちは ${input}さん`);
 
 let isBoss = confirm("あなたがボスですか？");
 alert(isBoss);
+
+let value  = Number(input);
+console.log(value);
+let str = String(23+3);
+console.log(str+111);
+let bool = Boolean(1);
+alert(7 - "2");
+alert("9" / "3");
+
+//非数値を数値に変換
+alert(+"");//0
+alert(+"asdf");//NaN
+alert(+true);//1
+alert(null);//0
+alert(undefined);//NaN
