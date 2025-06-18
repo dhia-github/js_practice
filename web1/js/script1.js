@@ -533,14 +533,14 @@ let ladder = {
 };
 ladder.up().up().down().up().up().down().showStep(); // 1
 
-function User(name) {
-  this.name = name;
-  this.isAdmin = false;
-}
+// function User(name) {
+//   this.name = name;
+//   this.isAdmin = false;
+// }
 
-user = new User('diamond');
-console.log(user.name);
-console.log(user.isAdmin);
+// user = new User('diamond');
+// console.log(user.name);
+// console.log(user.isAdmin);
 //コンストラクタはreturnがない場合はthisを返す（これが普通）
 //return プリミティブ型の場合は無視➡️thisを返す
 //return オブジェクトの場合はそのオブジェクトを返す！
@@ -927,16 +927,310 @@ arr.forEach(function (item, index, array) {
   console.log(`${item} is at index ${index} in ${array}`);
 });
 
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
-console.log();
+let arr2 = [1, -1, 2, -2, 3];
+arr2.reverse();
+console.log(arr2);
+
+let names = 'Bilbo, Gandalf, Nazgul';
+let arr3 = names.split(',');
+arr3 = arr3.map((name) => name.trim());
+console.log(arr3);
+
+let str2 = arr3.join(';');
+console.log(str2);
+
+console.log(str2.split('')); //文字列を配列に変換
+console.log(arr3.join('')); //配列を文字列に変換
+
+arr.sort((a, b) => b - a);
+
+function Calculator() {
+  this.methods = {
+    '+': (n1, n2) => n1 + n2,
+    '-': (n1, n2) => n1 - n2,
+  };
+
+  this.calculate = function (str) {
+    let arr = str.split(' ');
+    let n1 = +arr[0];
+    let op = arr[1];
+    let n2 = +arr[2];
+
+    if (isNaN(n1) || isNaN(n2) || !this.methods[op]) {
+      return NaN;
+    }
+
+    let result = this.methods[op](n1, n2);
+    return result;
+  };
+
+  this.addMethod = function (op, func) {
+    this.methods[op] = func;
+  };
+}
+
+function User(name, age) {
+  this.name = name;
+  this.age = age;
+}
+
+let john = new User('John', 25);
+let pete = new User('Pete', 30);
+let mary = new User('Mary', 28);
+
+let users = [john, pete, mary];
+names = users.map((item) => item.name);
+
+console.log(names);
+
+john = { name: 'John', surname: 'Smith', id: 1 };
+pete = { name: 'Pete', surname: 'Hunt', id: 2 };
+mary = { name: 'Mary', surname: 'Key', id: 3 };
+
+users = [john, pete, mary];
+
+let usersMapped = users.map((item) => ({
+  id: item.id,
+  fullName: `${item.name} ${item.surname}`,
+}));
+
+// usersMapped = users.map((item) => {
+//   let obj = {};
+//   obj['id'] = item.id;
+//   obj['fullName'] = `${item.name} ${item.surname}`;
+//   return obj;
+// });
+
+console.log(usersMapped);
+let userss = [
+  { id: 'john', name: 'John Smith', age: 20 },
+  { id: 'ann', name: 'Ann Smith', age: 24 },
+  { id: 'pete', name: 'Pete Peterson', age: 31 },
+];
+
+function groupById(array) {
+  return array.reduce((accumulator, item) => {
+    accumulator[item.id] = item;
+    return accumulator;
+  }, {});
+}
+
+let usersById = groupById(userss);
+console.log(usersById);
+
+let messages = [
+  { text: 'Hello', from: 'John' },
+  { text: 'How goes?', from: 'John' },
+  { text: 'See you soon', from: 'Alice' },
+];
+
+let readMsg = new WeakMap();
+readMsg.set(messages[1], new Date());
+let readmen = new WeakSet();
+readmen.add(messages[0]);
+
+obj = {
+  name: 'John',
+  age: 30,
+};
+
+obj = {
+  banana: 1,
+  orange: 2,
+  meat: 4,
+};
+
+arr = Object.keys(obj); // ['banana', 'orange', 'meat']
+arr = Object.values(obj); // [1, 2, 4]
+arr = Object.entries(obj); // [ ['banana', 1], ['orange', 2], ['meat', 4] ]
+
+let doublePrices = Object.fromEntries(/*Map*/ Object.entries(obj).map(([key, value]) => [key, value * 2]));
+console.log(doublePrices.meat); // 8
+//オブジェクトに備わっていない配列限定メソッドを使いたい
+//Object.entries(obj) で配列に変換した後に
+//メソッドを適応する。その後、Object.fromEntries() でオブジェクトに戻す
+salaries = {
+  John: 100,
+  Pete: 300,
+  Mary: 250,
+};
+
+function sumSalaries(salaries) {
+  let sum = 0;
+  for (let val of Object.values(salaries)) {
+    sum += val;
+  }
+  return sum;
+}
+
+user = {
+  name: 'John',
+  age: 30,
+};
+
+function count(obj) {
+  return Object.keys(obj).length;
+}
+
+let [item1, item2] = arr;
+console.log(item1);
+console.log(item2);
+
+[item1, item2] = 'Furandoru Scarlet'.split(' ');
+console.log(item1);
+console.log(item2);
+
+//いらない要素はカンマ（空）でスキップ
+let [, , , item4] = ['Jyestha', 'CoilHead', 'ManEater', 'BigBolt'];
+console.log(item4); //BigBolt
+
+//溢れる要素を配列にまとめる ...rest
+let [food1, food2, ...rest] = ['apple', 'orange', 'banana', 'kiwi', 'watermelon'];
+console.log(rest);
+
+let options = {
+  title: 'Menu',
+  width: 100,
+  height: 200,
+};
+
+let { title, width, height } = options;
+console.log(title); //Menu
+console.log(width); //100
+console.log(height); //200
+
+// let { width: w, height: h, price: p = 100.6 } = options;
+// console.log(w); //100
+// console.log(h); //200
+// console.log(p); //100.6
+// let { title, ...rest } = options;
+// console.log(rest); // {width: 100, height: 200}
+
+options = {
+  size: {
+    width: 100,
+    height: 200,
+  },
+  items: ['Cake', 'Donut'],
+  extra: true,
+};
+
+let {
+  size: { width: w, height: h }, //別にsizeにObj直接貰ってきてもいい「size,」でもいいが
+  //ここでは一度size「名前は相手のObjのプロパティ名で固定」でObjを受け取り、コロンで代入先変数の名前を変更し、
+  // オブジェクトの非構造化をして各変数に代入している。
+  //まあ、外側オブジェクトのプロパティ（内部オブジェクト）を非構造化して受け取ってる。アンパックか？
+  items: itms,
+  extra: et,
+  genre = 'R12',
+} = options;
+console.log(genre); //R12
+console.log(w); // 100
+console.log(h); // 200
+console.log(itms); // ["Cake", "Donut"]
+console.log(et); // true
+
+user = {
+  name: 'John',
+  years: 30,
+};
+
+let { isAdmin = false } = user;
+
+salaries = {
+  John: 100,
+  Pete: 300,
+  Mary: 250,
+};
+function topSalary(salaries) {
+  let max = 0;
+  let maxName = null;
+  //  let name, salary;
+  for (let [name, salary] of Object.entries(salaries)) {
+    if (salary > max) {
+      max = salary;
+      maxName = name;
+    }
+  }
+  return maxName;
+}
+
+let day = new Date();
+console.log(day);
+day.setFullYear(2023);
+day.setMonth(8);
+day.setDate(23);
+console.log(day);
+
+day = new Date(2012, 1, 20, 3, 12);
+console.log(day);
+
+function getWeekDay(date) {
+  let i = date.getDay();
+  let youbi = ['SU', 'MO', 'TU', 'WE', 'TH', 'FR', 'SA'];
+  return youbi[i];
+}
+
+function getLocalDay(date) {
+  let i = date.getDay() - 1;
+  let youbi = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+  return youbi[i];
+}
+alert(getLocalDay(new Date(2012, 0, 3))); // 2
+
+function getDateAgo(date, day) {
+  let tmp = new Date(date);
+  tmp.setDate(date.getDate() - day);
+  return tmp.getDate();
+}
+function getSecondsToTomorrow() {
+  let date = new Date();
+  let tmr = new Date(date);
+  tmr.setDate(date.getDate() + 1);
+  tmr.setHours(0, 0, 0, 0);
+  return Math.round((tmr - date) / 1000);
+}
+console.log(getSecondsToTomorrow());
+//json  Object が文字列になった
+let student = {
+  name: 'John',
+  age: 30,
+  isAdmin: false,
+  courses: ['html', 'css', 'js'],
+  wife: null,
+};
+
+let jsonSTR = JSON.stringify(student);
+console.log(jsonSTR); //type --- string
+
+user = {
+  name: 'John Smith',
+  age: 35,
+};
+let json = JSON.stringify(user);
+let myUser = JSON.parse(json, function (key, value) {
+  if (key == 'age') {
+    return value - 1;
+  }
+  return value;
+});
+//------------------------------------------------
+let room = {
+  number: 23,
+};
+
+let meetup = {
+  title: 'Conference',
+  occupiedBy: [{ name: 'John' }, { name: 'Alice' }],
+  place: room,
+};
+
+// 循環参照
+room.occupiedBy = meetup;
+meetup.self = meetup;
+
+alert(
+  JSON.stringify(meetup, function replacer(key, value) {
+    /* your code */
+  })
+);
