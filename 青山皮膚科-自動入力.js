@@ -6,13 +6,18 @@
 // @author       You
 // @match        https://park.paa.jp/park2/clinics/1188/*
 // @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
-// @grant        none
+// @grant        GM_getValue
+// @grant        GM_setValue
 // ==/UserScript==
 
-(function () {
+(async function () {
   'use strict';
 
   // ---- 設定 ----
+  //最初のボタンや次へボタン
+  const firstLinkName = '.ipk-wrap-primary-link a';
+  const nextButtonName = '.ipk-primary-btn.pure-button';
+
   // 1. フォームに入力したい情報をオブジェクトの配列にまとめる
   const itemsToFill = [
     { selector: 'input[placeholder="名前"]', value: '上坂すみれ', type: 'text' },
@@ -26,49 +31,71 @@
   const timeout = 400; // 各要素を待つ時間
   //------------------------------------------------------------------------------------
 
-  //最初のリンククリック
-  clickFirstLink();
+  // 1. 現在のステップ番号を取得（保存されてなければ初回なので1）
+  let step = await GM_getValue('automation_step', 1);
 
-  //次のボタンクリック
-  clickNextButton();
+  // 2. ステップ番号に応じて処理を分岐
+  switch (step) {
+    case 1:
+      // 最初のページの処理
+      await GM_setValue('automation_step', 2); // 次のページはステップ2だと記憶させる
+      await clickFirstLink();
 
-  //フォーム・チェックボックス・セレクタを埋める
-  fillForm(); //returnがない
+      break;
 
-  //次のボタンクリック
-  clickNextButton();
+    case 2:
+      // 2番目のページの処理
+      await GM_setValue('automation_step', 3); // 次はステップ3
+      await clickNextButton();
+
+      break;
+
+    case 3:
+      // フォームページの処理
+      await fillForm(); // フォーム入力が終わるのを待つ
+      await GM_setValue('automation_step', 4); // 次はステップ4
+      await clickNextButton(); // フォーム入力後の「次へ」ボタン
+
+      break;
+
+    case 4:
+      // 最後のページの処理
+      console.log('最終ページに到達しました。');
+      // ここで最後のクリック処理など
+
+      // 全ての処理が終わったら、ステップをリセット
+      await GM_setValue('automation_step', 1);
+      console.log('全工程が完了したため、ステップをリセットしました。');
+      break;
+
+    default:
+      console.log('不明なステップです。ステップをリセットします。');
+      await GM_setValue('automation_step', 1);
+      break;
+  }
 
   //------------------------------------------------------------------------------
   //最初のリンククリック
-  function clickFirstLink() {
+  async function clickFirstLink() {
     // ページ内に「最初のリンク」があるか探す
-    const firstLink = document.querySelector('.ipk-wrap-primary-link a');
-    if (firstLink) {
+    const element = await waitForElement(firstLinkName, timeout);
+
+    if (element) {
       console.log('ステップ1のリンクを検出。クリックします。');
-      firstLink.click();
+      element.click();
       return; // このページの処理はここで終了
     }
   }
 
   //次のボタンクリック
-  function clickNextButton() {
+  async function clickNextButton() {
     // ページ内に次へのボタンがあるか探す
-    let nextButton = document.querySelector('.ipk-primary-btn.pure-button');
-    if (nextButton) {
-      nextButton.click();
-      return;
-    }
-  }
+    const element = await waitForElement(nextButtonName, timeout);
 
-  function clickCheckBox() {
-    //checkboxをクリック
-    const checkbox = document.querySelector('#consent-checkbox');
-    // 要素が見つかり、かつ、まだチェックが入っていない場合にクリックします
-    if (checkbox && !checkbox.checked) {
-      console.log('チェックボックスが見つかりました。クリックします。');
-      checkbox.click();
-    } else {
-      console.log('チェックボックスが見つからないか、すでにチェックされています。');
+    if (element) {
+      console.log('次へボタンを検出。クリックします。');
+      element.click();
+      return; // このページの処理はここで終了
     }
   }
 
@@ -86,7 +113,7 @@
       if (element) {
         console.log(' -> 見つかりました。入力します。');
         //チェックボックスならば
-        if (element.type === 'checkbox') {
+        if (item.type === 'checkbox') {
           // 要素が見つかり、かつ、まだチェックが入っていない場合にクリックします
           if (element.checked !== item.value) {
             console.log('チェックボックスが見つかりました。クリックします。');
