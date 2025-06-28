@@ -17,7 +17,8 @@
   //最初のボタンや次へボタン
   const firstLinkName = '.ipk-wrap-primary-link a';
   const nextButtonName = '.ipk-primary-btn.pure-button';
-
+  const calendarLinkName = '.ipk-calendar-weekday.ipk-calendar-bookable.ipk-calendar-today a';
+  const reserveTimeName = 'ul.ipk-w-time-list > li:nth-child(1) button.ipk-primary-btn';
   // 1. フォームに入力したい情報をオブジェクトの配列にまとめる
   const itemsToFill = [
     { selector: 'input[placeholder="名前"]', value: '上坂すみれ', type: 'text' },
@@ -44,28 +45,37 @@
       break;
 
     case 2:
-      // 2番目のページの処理
+      // 2番目のページ(カレンダー)の処理
       await GM_setValue('automation_step', 3); // 次はステップ3
-      await clickNextButton();
+      await clickCalendarLink();
+      //土曜日の場合なし　　await clickNextButton();
 
       break;
 
     case 3:
-      // フォームページの処理
-      await fillForm(); // フォーム入力が終わるのを待つ
-      await GM_setValue('automation_step', 4); // 次はステップ4
-      await clickNextButton(); // フォーム入力後の「次へ」ボタン
+      //時間選択のページ
+      await GM_setValue('automation_step', 4);
+      await clickReserveTime();
 
       break;
 
     case 4:
-      // 最後のページの処理
-      console.log('最終ページに到達しました。');
-      // ここで最後のクリック処理など
+      // フォームページの処理
+      await GM_setValue('automation_step', 5); // 次はステップ5
+      await fillForm(); // フォーム入力が終わるのを待つ
+      await clickNextButton(); // フォーム入力後の「次へ」ボタン
 
+      break;
+
+    case 5:
+      // 最後のページの処理
+      // ここで最後のクリック処理など
+      console.log('全工程が完了したため、ステップをリセットしました。');
       // 全ての処理が終わったら、ステップをリセット
       await GM_setValue('automation_step', 1);
-      console.log('全工程が完了したため、ステップをリセットしました。');
+      console.log('最終ページに到達しました。');
+      return;
+
       break;
 
     default:
@@ -84,6 +94,10 @@
       console.log('ステップ1のリンクを検出。クリックします。');
       element.click();
       return; // このページの処理はここで終了
+    } else {
+      console.log('ステップ１のリンクがありません。');
+      await GM_setValue('automation_step', 1);
+      return;
     }
   }
 
@@ -96,6 +110,40 @@
       console.log('次へボタンを検出。クリックします。');
       element.click();
       return; // このページの処理はここで終了
+    } else {
+      console.log('次へボタンがありません。');
+      await GM_setValue('automation_step', 1);
+      return;
+    }
+  }
+
+  async function clickCalendarLink() {
+    // ページ内に「カレンダーリンク」があるか探す
+    const element = await waitForElement(calendarLinkName, timeout);
+
+    if (element) {
+      console.log('カレンダーのリンクを検出。クリックします。');
+      element.click();
+      return; // このページの処理はここで終了
+    } else {
+      console.log('カレンダーのリンクがありません。');
+      await GM_setValue('automation_step', 1);
+      return;
+    }
+  }
+
+  async function clickReserveTime() {
+    // ページ内に一番早い時間予約があいてるか探す
+    const element = await waitForElement(reserveTimeName, timeout);
+
+    if (element) {
+      console.log('予約ボタンを検出。クリックを試みます。');
+      element.click();
+      return; // このページの処理はここで終了
+    } else {
+      console.log('時間予約ボタンがありません。');
+      await GM_setValue('automation_step', 1);
+      return;
     }
   }
 
